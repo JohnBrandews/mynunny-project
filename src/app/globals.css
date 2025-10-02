@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Ensure form inputs have proper visibility */
+input, textarea, select {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+  border: 2px solid #d1d5db !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
+}
+
+/* Focus states for better visibility */
+input:focus, textarea:focus, select:focus {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  outline: none !important;
+}
+
+/* Force visibility on all input types */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="number"], 
+input[type="tel"],
+textarea, 
+select {
+  color: #1f2937 !important;
+  background-color: #ffffff !important;
+  border: 2px solid #d1d5db !important;
+  font-size: 16px !important;
+  padding: 12px !important;
+}
+
+/* Ensure background images load properly */
+.hero-bg {
+  /* Homepage hero background with subject image and soft overlay */
+  background-image:
+    radial-gradient(120% 120% at 0% 0%, rgba(2, 6, 23, 0.55) 0%, rgba(2, 6, 23, 0.35) 45%, rgba(2, 6, 23, 0.15) 100%),
+    url('/hero-cleaner.png');
+  background-blend-mode: overlay, normal;
+  background-size: cover;
+  background-position: 75% center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Fallback for background image */
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  z-index: -1;
+}
