@@ -41,6 +41,8 @@ export default function ClientDashboard() {
   const [loading, setLoading] = useState(true)
   const [showRequestForm, setShowRequestForm] = useState(false)
   const [requestLoading, setRequestLoading] = useState(false)
+  const [myRequests, setMyRequests] = useState<any[]>([])
+  const [myRequestsLoading, setMyRequestsLoading] = useState(false)
   const [requestForm, setRequestForm] = useState<RequestForm>({
     service: '',
     amount: 0,
@@ -57,6 +59,12 @@ export default function ClientDashboard() {
     }
     fetchNunnies()
   }, [user, router])
+
+  useEffect(() => {
+    if (user && user.role === 'CLIENT') {
+      void fetchMyRequests()
+    }
+  }, [user])
 
   const fetchNunnies = async () => {
     try {
@@ -79,6 +87,32 @@ export default function ClientDashboard() {
   const handleContactNunny = (nunny: Nunny) => {
     setContactInfo(nunny.user)
     setShowContact(true)
+  }
+
+  const fetchMyRequests = async () => {
+    setMyRequestsLoading(true)
+    try {
+      const res = await fetch('/api/requests/mine', { headers: { 'Authorization': `Bearer ${token}` } })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to load your requests')
+      setMyRequests(data.requests)
+    } catch (e: any) {
+      toast.error(e.message)
+    } finally {
+      setMyRequestsLoading(false)
+    }
+  }
+
+  const markAssigned = async (id: string) => {
+    try {
+      const res = await fetch(`/api/requests/${id}/assign`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to mark as assigned')
+      toast.success('Marked as assigned')
+      fetchMyRequests()
+    } catch (e: any) {
+      toast.error(e.message)
+    }
   }
 
   const handleSubmitRequest = async (e: React.FormEvent) => {
@@ -114,6 +148,7 @@ export default function ClientDashboard() {
         location: '',
         description: ''
       })
+      fetchMyRequests()
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -199,6 +234,60 @@ export default function ClientDashboard() {
             </form>
           </div>
         )}
+
+        {/* My Posts */}
+        <div className="bg-white shadow overflow-hidden sm:rounded-md mb-8">
+          <div className="px-4 py-5 sm:px-6">
+            <h3 className="text-lg leading-6 font-medium text-gray-900">My Posts</h3>
+            <p className="mt-1 max-w-2xl text-sm text-gray-500">Manage your posted service requests</p>
+          </div>
+          {myRequestsLoading ? (
+            <div className="text-center py-8">Loading...</div>
+          ) : myRequests.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">You have not posted any requests yet.</div>
+          ) : (
+            <ul className="divide-y divide-gray-200">
+              {myRequests.map((r) => (
+                <li key={r.id} className="px-4 py-4 sm:px-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold text-gray-900">{r.service} • KES {Number(r.amount).toLocaleString()}</div>
+                      <div className="text-sm text-gray-600">{r.location}</div>
+                      <div className="text-xs mt-1">
+                        <span className={`px-2 py-0.5 rounded-full ${r.status === 'ASSIGNED' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                          {r.status}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      {r.status !== 'ASSIGNED' ? (
+                        <Button size="sm" onClick={() => markAssigned(r.id)}>Mark as Assigned</Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(`/api/requests/${r.id}/unassign`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } })
+                              const data = await res.json()
+                              if (!res.ok) throw new Error(data.error || 'Failed to unassign')
+                              toast.success('Marked as open')
+                              fetchMyRequests()
+                            } catch (e: any) {
+                              toast.error(e.message)
+                            }
+                          }}
+                        >
+                          Unassign
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {/* Available Nunnies */}
         <div className="bg-white shadow overflow-hidden sm:rounded-md">

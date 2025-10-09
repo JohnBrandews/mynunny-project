@@ -23,6 +23,14 @@ async function handler(req: NextRequest) {
         },
         orderBy: { createdAt: 'desc' }
       })
+      // Filter out assigned jobs from public feed (optional)
+      // If you want to show with a badge instead, remove the filter.
+      // @ts-ignore
+      for (let i = requests.length - 1; i >= 0; i--) {
+        if ((requests[i] as any).status === 'ASSIGNED') {
+          requests.splice(i, 1)
+        }
+      }
 
       return NextResponse.json({ requests })
     }

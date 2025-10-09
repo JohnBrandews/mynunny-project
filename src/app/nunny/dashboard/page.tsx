@@ -12,6 +12,7 @@ interface Request {
   amount: number
   location: string
   description: string
+  status?: 'OPEN' | 'ASSIGNED'
   createdAt: string
   email?: string
   phone?: string
@@ -220,9 +221,16 @@ export default function NunnyDashboard() {
                     <div className="ml-4 flex-shrink-0">
                       <Button
                         size="sm"
-                        onClick={() => handleContactClick(request)}
+                        onClick={() => {
+                          if (request.status === 'ASSIGNED') {
+                            toast.error('This job has been assigned. You cannot contact the client.')
+                            return
+                          }
+                          handleContactClick(request)
+                        }}
+                        disabled={request.status === 'ASSIGNED'}
                       >
-                        Contact Client
+                        {request.status === 'ASSIGNED' ? 'Assigned' : 'Contact Client'}
                       </Button>
                     </div>
                   </div>

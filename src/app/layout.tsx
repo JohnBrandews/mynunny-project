@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/Navigation";
 import { Toaster } from "react-hot-toast";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,12 @@ export default function RootLayout({
           </main>
           <Toaster position="top-right" />
         </AuthProvider>
+        <Script
+          id="tawk-widget"
+          src={`https://embed.tawk.to/${process.env.TAWK_PROPERTY_ID}/${process.env.TAWK_WIDGET_ID}`}
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
       </body>
     </html>
   );
