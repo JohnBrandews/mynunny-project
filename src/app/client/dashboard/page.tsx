@@ -84,6 +84,10 @@ export default function ClientDashboard() {
     }
   }
 
+  // Optimize card rendering with useMemo
+  const memoizedNunnies = React.useMemo(() => nunnies, [nunnies])
+  const memoizedRequests = React.useMemo(() => myRequests, [myRequests])
+
   const handleContactNunny = (nunny: Nunny) => {
     setContactInfo(nunny.user)
     setShowContact(true)
@@ -105,7 +109,13 @@ export default function ClientDashboard() {
 
   const markAssigned = async (id: string) => {
     try {
-      const res = await fetch(`/api/requests/${id}/assign`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } })
+      const res = await fetch(`/api/requests/${id}/assign`, { 
+        method: 'PATCH', 
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        } 
+      })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to mark as assigned')
       toast.success('Marked as assigned')
@@ -161,13 +171,13 @@ export default function ClientDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: 'var(--blue-50)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Client Dashboard</h1>
-              <p className="mt-2 text-gray-600">Welcome back, {user.fullName}! Find nunnies or post your service requests.</p>
+              <h1 className="text-3xl font-bold" style={{ color: 'var(--blue-900)' }}>Client Dashboard</h1>
+              <p className="mt-2" style={{ color: 'var(--blue-600)' }}>Welcome back, {user.fullName}! Find nunnies or post your service requests.</p>
             </div>
             <Button onClick={() => setShowRequestForm(!showRequestForm)}>
               {showRequestForm ? 'Cancel' : 'Post Service Request'}
@@ -177,8 +187,8 @@ export default function ClientDashboard() {
 
         {/* Post Request Form */}
         {showRequestForm && (
-          <div className="bg-white shadow rounded-lg p-6 mb-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Post a Service Request</h3>
+          <div className="bg-white shadow rounded-lg p-6 mb-8 border" style={{ borderColor: 'var(--blue-200)' }}>
+            <h3 className="text-lg font-medium mb-4" style={{ color: 'var(--blue-900)' }}>Post a Service Request</h3>
             <form onSubmit={handleSubmitRequest} className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <Select
@@ -236,39 +246,92 @@ export default function ClientDashboard() {
         )}
 
         {/* My Posts */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-md mb-8">
-          <div className="px-4 py-5 sm:px-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">My Posts</h3>
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">Manage your posted service requests</p>
-          </div>
+        <div className="mb-8">
+          <h3 className="text-lg leading-6 font-medium mb-4" style={{ color: 'var(--blue-900)' }}>My Posts</h3>
+          <p className="text-sm mb-6" style={{ color: 'var(--blue-600)' }}>Manage your posted service requests</p>
+          
           {myRequestsLoading ? (
-            <div className="text-center py-8">Loading...</div>
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--blue-600)' }}></div>
+              <p className="mt-2" style={{ color: 'var(--blue-600)' }}>Loading...</p>
+            </div>
           ) : myRequests.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">You have not posted any requests yet.</div>
+            <div className="text-center py-12">
+              <p style={{ color: 'var(--blue-600)' }}>You have not posted any requests yet.</p>
+            </div>
           ) : (
-            <ul className="divide-y divide-gray-200">
-              {myRequests.map((r) => (
-                <li key={r.id} className="px-4 py-4 sm:px-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold text-gray-900">{r.service} • KES {Number(r.amount).toLocaleString()}</div>
-                      <div className="text-sm text-gray-600">{r.location}</div>
-                      <div className="text-xs mt-1">
-                        <span className={`px-2 py-0.5 rounded-full ${r.status === 'ASSIGNED' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                          {r.status}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {memoizedRequests.map((r) => (
+                <div
+                  key={r.id}
+                  className="profile-card w-full rounded-md shadow-xl overflow-hidden z-10 relative cursor-pointer snap-start shrink-0 bg-white flex flex-col items-center justify-center gap-3 transition-all duration-300 group"
+                >
+                  <div className="avatar w-full pt-5 flex items-center justify-center flex-col gap-1">
+                    <div className="img_container w-full flex items-center justify-center relative z-40 after:absolute after:h-[6px] after:w-full after:bg-[var(--blue-600)] after:top-4 after:group-hover:size-[1%] after:delay-300 after:group-hover:delay-0 after:group-hover:transition-all after:group-hover:duration-300 after:transition-all after:duration-300 before:absolute before:h-[6px] before:w-full before:bg-[var(--blue-600)] before:bottom-4 before:group-hover:size-[1%] before:delay-300 before:group-hover:delay-0 before:group-hover:transition-all before:group-hover:duration-300 before:transition-all before:duration-300">
+                      <div className="size-36 z-40 border-4 border-white rounded-full group-hover:border-8 group-hover:transition-all group-hover:duration-300 transition-all duration-300 bg-gradient-to-br from-blue-200 to-blue-400 flex items-center justify-center">
+                        <span className="text-2xl font-bold text-white">
+                          {r.service.charAt(0)}
                         </span>
                       </div>
+                      <div className="absolute bg-[var(--blue-600)] z-10 size-[60%] w-full group-hover:size-[1%] group-hover:transition-all group-hover:duration-300 transition-all duration-300 delay-700 group-hover:delay-0"></div>
                     </div>
+                  </div>
+                  
+                  <div className="headings *:text-center *:leading-4 px-4">
+                    <p className="text-xl font-serif font-semibold" style={{ color: 'var(--blue-900)' }}>
+                      {r.service}
+                    </p>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--blue-600)' }}>
+                      KES {Number(r.amount).toLocaleString()}
+                    </p>
+                  </div>
+                  
+                  <div className="w-full items-center justify-center flex px-4">
+                    <ul className="flex flex-col items-start gap-2 *:inline-flex *:gap-2 *:items-center *:justify-center *:border-b-[1.5px] *:border-b-stone-700 *:border-dotted *:text-xs *:font-semibold *:text-[var(--blue-900)] pb-3 w-full [&>*:last-child]:border-b-0">
+                      <li>
+                        <svg className="fill-stone-700 group-hover:fill-[var(--blue-600)]" height="15" width="15" viewBox="0 0 16 16">
+                          <path d="M8 0C5.2 0 3 2.2 3 5s4 11 5 11 5-8.2 5-11-2.2-5-5-5zm0 8C6.3 8 5 6.7 5 5s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z" fill="#444"></path>
+                        </svg>
+                        <p>{r.location}</p>
+                      </li>
+                      <li>
+                        <svg className="fill-stone-700 group-hover:fill-[var(--blue-600)]" height="15" width="15" viewBox="0 0 24 24">
+                          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" strokeWidth="2"></path>
+                        </svg>
+                        <p>Posted: {new Date(r.createdAt).toLocaleDateString()}</p>
+                      </li>
+                      <li>
+                        <svg className="fill-stone-700 group-hover:fill-[var(--blue-600)]" height="15" width="15" viewBox="0 0 24 24">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" strokeWidth="2"></path>
+                        </svg>
+                        <p>Status: {r.status}</p>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="w-full px-4 pb-4">
+                    <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+                      <strong>Description:</strong> {r.description}
+                    </p>
+                    
                     <div className="flex gap-2">
                       {r.status !== 'ASSIGNED' ? (
-                        <Button size="sm" onClick={() => markAssigned(r.id)}>Mark as Assigned</Button>
+                        <Button size="sm" onClick={() => markAssigned(r.id)} className="w-full btn-compact">
+                          Mark as Assigned
+                        </Button>
                       ) : (
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={async () => {
                             try {
-                              const res = await fetch(`/api/requests/${r.id}/unassign`, { method: 'PATCH', headers: { 'Authorization': `Bearer ${token}` } })
+                              const res = await fetch(`/api/requests/${r.id}/unassign`, { 
+                                method: 'PATCH', 
+                                headers: { 
+                                  'Authorization': `Bearer ${token}`,
+                                  'Content-Type': 'application/json'
+                                } 
+                              })
                               const data = await res.json()
                               if (!res.ok) throw new Error(data.error || 'Failed to unassign')
                               toast.success('Marked as open')
@@ -277,114 +340,138 @@ export default function ClientDashboard() {
                               toast.error(e.message)
                             }
                           }}
+                          className="w-full btn-compact"
                         >
                           Unassign
                         </Button>
                       )}
                     </div>
                   </div>
-                </li>
+                  
+                  <hr className="w-full group-hover:h-5 h-3 bg-[var(--blue-600)] group-hover:transition-all group-hover:duration-300 transition-all duration-300" />
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
 
         {/* Available Nunnies */}
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <div className="px-4 py-5 sm:px-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Available Nunnies
-            </h3>
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              Browse approved nunnies in your area
-            </p>
-          </div>
+        <div className="mb-8">
+          <h3 className="text-lg leading-6 font-medium mb-4" style={{ color: 'var(--blue-900)' }}>
+            Available Nunnies
+          </h3>
+          <p className="text-sm mb-6" style={{ color: 'var(--blue-600)' }}>
+            Browse approved nunnies in your area
+          </p>
 
           {loading ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-2 text-gray-600">Loading nunnies...</p>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: 'var(--blue-600)' }}></div>
+              <p className="mt-2" style={{ color: 'var(--blue-600)' }}>Loading nunnies...</p>
             </div>
           ) : nunnies.length === 0 ? (
             <div className="text-center py-12">
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No nunnies available</h3>
-              <p className="mt-1 text-sm text-gray-500">There are currently no approved nunnies in your area.</p>
+              <h3 className="mt-2 text-sm font-medium" style={{ color: 'var(--blue-900)' }}>No nunnies available</h3>
+              <p className="mt-1 text-sm" style={{ color: 'var(--blue-600)' }}>There are currently no approved nunnies in your area.</p>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-200">
-              {nunnies.map((nunny) => (
-                <li key={nunny.id} className="px-4 py-4 sm:px-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0">
-                          {nunny.user.profilePictureUrl ? (
-                            <img className="h-12 w-12 rounded-full" src={nunny.user.profilePictureUrl} alt="" />
-                          ) : (
-                            <div className="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
-                              <svg className="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg>
-                            </div>
-                          )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {memoizedNunnies.map((nunny) => (
+                <div
+                  key={nunny.id}
+                  className="profile-card w-full rounded-md shadow-xl overflow-hidden z-10 relative cursor-pointer snap-start shrink-0 bg-white flex flex-col items-center justify-center gap-3 transition-all duration-300 group"
+                >
+                  <div className="avatar w-full pt-5 flex items-center justify-center flex-col gap-1">
+                    <div className="img_container w-full flex items-center justify-center relative z-40 after:absolute after:h-[6px] after:w-full after:bg-[var(--blue-600)] after:top-4 after:group-hover:size-[1%] after:delay-300 after:group-hover:delay-0 after:group-hover:transition-all after:group-hover:duration-300 after:transition-all after:duration-300 before:absolute before:h-[6px] before:w-full before:bg-[var(--blue-600)] before:bottom-4 before:group-hover:size-[1%] before:delay-300 before:group-hover:delay-0 before:group-hover:transition-all before:group-hover:duration-300 before:transition-all before:duration-300">
+                      {nunny.user.profilePictureUrl ? (
+                        <img
+                          src={nunny.user.profilePictureUrl}
+                          alt={nunny.user.fullName}
+                          className="size-36 z-40 border-4 border-white rounded-full group-hover:border-8 group-hover:transition-all group-hover:duration-300 transition-all duration-300 object-cover"
+                        />
+                      ) : (
+                        <div className="size-36 z-40 border-4 border-white rounded-full group-hover:border-8 group-hover:transition-all group-hover:duration-300 transition-all duration-300 bg-gradient-to-br from-blue-200 to-blue-400 flex items-center justify-center">
+                          <span className="text-2xl font-bold text-white">
+                            {nunny.user.fullName.charAt(0)}
+                          </span>
                         </div>
-                        <div className="ml-4 flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h4 className="text-lg font-medium text-gray-900 truncate">
-                                {nunny.user.fullName}
-                              </h4>
-                              <div className="mt-1 flex items-center text-sm text-gray-500">
-                                <span className="mr-4">{nunny.user.county}, {nunny.user.constituency}</span>
-                                <span>{nunny.user.phone}</span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Approved
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="mt-2">
-                            <p className="text-sm text-gray-600">
-                              <strong>Services:</strong> {JSON.parse(nunny.services).join(', ')}
-                            </p>
-                            <p className="text-sm text-gray-600 mt-1">
-                              <strong>Description:</strong> {nunny.description}
-                            </p>
-                            {nunny.contactInfo && (
-                              <p className="text-sm text-gray-600">
-                                <strong>Contact Info:</strong> {nunny.contactInfo}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="ml-4 flex-shrink-0">
-                      <Button
-                        size="sm"
-                        onClick={() => handleContactNunny(nunny)}
-                      >
-                        Contact Nunny
-                      </Button>
+                      )}
+                      <div className="absolute bg-[var(--blue-600)] z-10 size-[60%] w-full group-hover:size-[1%] group-hover:transition-all group-hover:duration-300 transition-all duration-300 delay-700 group-hover:delay-0"></div>
                     </div>
                   </div>
-                </li>
+                  
+                  <div className="headings *:text-center *:leading-4 px-4">
+                    <p className="text-xl font-serif font-semibold" style={{ color: 'var(--blue-900)' }}>
+                      {nunny.user.fullName}
+                    </p>
+                    <p className="text-sm font-semibold" style={{ color: 'var(--blue-600)' }}>
+                      Nunny
+                    </p>
+                  </div>
+                  
+                  <div className="w-full items-center justify-center flex px-4">
+                    <ul className="flex flex-col items-start gap-2 *:inline-flex *:gap-2 *:items-center *:justify-center *:border-b-[1.5px] *:border-b-stone-700 *:border-dotted *:text-xs *:font-semibold *:text-[var(--blue-900)] pb-3 w-full [&>*:last-child]:border-b-0">
+                      <li>
+                        <svg className="fill-stone-700 group-hover:fill-[var(--blue-600)]" height="15" width="15" viewBox="0 0 24 24">
+                          <path d="M0 0h24v24H0V0z" fill="none"></path>
+                          <path d="M19.23 15.26l-2.54-.29c-.61-.07-1.21.14-1.64.57l-1.84 1.84c-2.83-1.44-5.15-3.75-6.59-6.59l1.85-1.85c.43-.43.64-1.03.57-1.64l-.29-2.52c-.12-1.01-.97-1.77-1.99-1.77H5.03c-1.13 0-2.07.94-2 2.07.53 8.54 7.36 15.36 15.89 15.89 1.13.07 2.07-.87 2.07-2v-1.73c.01-1.01-.75-1.86-1.76-1.98z"></path>
+                        </svg>
+                        <p>{nunny.user.phone}</p>
+                      </li>
+                      <li>
+                        <svg className="fill-stone-700 group-hover:fill-[var(--blue-600)]" height="15" width="15" viewBox="0 0 16 16">
+                          <path d="M8 0C5.2 0 3 2.2 3 5s4 11 5 11 5-8.2 5-11-2.2-5-5-5zm0 8C6.3 8 5 6.7 5 5s1.3-3 3-3 3 1.3 3 3-1.3 3-3 3z" fill="#444"></path>
+                        </svg>
+                        <p>{nunny.user.county}, {nunny.user.constituency}</p>
+                      </li>
+                      <li>
+                        <svg className="fill-stone-700 group-hover:fill-[var(--blue-600)]" height="15" width="15" viewBox="0 0 24 24">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" strokeWidth="2"></path>
+                        </svg>
+                        <p>Services: {JSON.parse(nunny.services).join(', ')}</p>
+                      </li>
+                      <li>
+                        <svg className="fill-stone-700 group-hover:fill-[var(--blue-600)]" height="15" width="15" viewBox="0 0 24 24">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="currentColor" strokeWidth="2"></path>
+                        </svg>
+                        <p>Status: Approved</p>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="w-full px-4 pb-4">
+                    <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+                      <strong>Description:</strong> {nunny.description}
+                    </p>
+                    {nunny.contactInfo && (
+                      <p className="text-xs text-gray-600 mb-3 line-clamp-1">
+                        <strong>Contact Info:</strong> {nunny.contactInfo}
+                      </p>
+                    )}
+                    
+                    <Button
+                      size="sm"
+                      onClick={() => handleContactNunny(nunny)}
+                      className="w-full btn-compact"
+                    >
+                      Contact Nunny
+                    </Button>
+                  </div>
+                  
+                  <hr className="w-full group-hover:h-5 h-3 bg-[var(--blue-600)] group-hover:transition-all group-hover:duration-300 transition-all duration-300" />
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
 
         {/* Contact Nunny Modal */}
         {showContact && contactInfo && (
           <div
-            className="fixed inset-0 flex items-center justify-center z-50"
+            className="fixed inset-0 flex items-center justify-center z-[9999]"
             style={{
               background: 'rgba(0,0,0,0.5)',
               backdropFilter: 'blur(2px)',

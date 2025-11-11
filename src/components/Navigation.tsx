@@ -33,26 +33,54 @@ export const Navigation: React.FC = () => {
             </Link>
 
             {user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-700">Welcome, {user.fullName}</span>
-                {user.role === 'ADMIN' && (
-                  <Link href="/admin/dashboard">
-                    <Button variant="outline" size="sm">Admin Dashboard</Button>
-                  </Link>
+              <div className="relative">
+                <button
+                  className="flex items-center focus:outline-none"
+                  onClick={() => setIsSignUpMenuOpen((v) => !v)}
+                >
+                  {user.profilePictureUrl ? (
+                    <img src={user.profilePictureUrl} alt={user.fullName} className="w-9 h-9 rounded-full object-cover border" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold">
+                      {user.fullName?.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}
+                    </div>
+                  )}
+                  <svg className="w-4 h-4 ml-2 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.27a.75.75 0 01-.02-1.06z" clipRule="evenodd" />
+                  </svg>
+                </button>
+
+                {isSignUpMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl ring-1 ring-black/5 z-50 overflow-hidden">
+                    <div className="p-4 flex items-center gap-3">
+                      {user.profilePictureUrl ? (
+                        <img src={user.profilePictureUrl} alt={user.fullName} className="w-12 h-12 rounded-full object-cover border" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center text-base font-semibold">
+                          {user.fullName?.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-semibold text-gray-900">{user.fullName}</div>
+                        <div className="text-sm text-gray-500">{user.role === 'ADMIN' ? 'System Administrator' : user.role === 'NUNNY' ? 'Nunny' : 'Client'}</div>
+                        {user.role !== 'ADMIN' && (
+                          <div className="text-sm text-gray-500 truncate">{user.email}</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="border-t border-gray-100">
+                      <Link href={user.role === 'ADMIN' ? '/admin/dashboard' : user.role === 'NUNNY' ? '/nunny/dashboard' : '/client/dashboard'} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                        Dashboard
+                      </Link>
+                      <button
+                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                        onClick={logout}
+                      >
+                        Log out
+                      </button>
+                    </div>
+                  </div>
                 )}
-                {user.role === 'NUNNY' && (
-                  <Link href="/nunny/dashboard">
-                    <Button variant="outline" size="sm">Dashboard</Button>
-                  </Link>
-                )}
-                {user.role === 'CLIENT' && (
-                  <Link href="/client/dashboard">
-                    <Button variant="outline" size="sm">Dashboard</Button>
-                  </Link>
-                )}
-                <Button variant="secondary" size="sm" onClick={logout}>
-                  Logout
-                </Button>
               </div>
             ) : (
               <div className="flex items-center space-x-4">

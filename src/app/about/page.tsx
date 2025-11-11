@@ -96,33 +96,61 @@ export default function About() {
         <section className="card mt-8">
           <h2 className="section-title">Why Choose MyNunny?</h2>
           <div className="grid md:grid-cols-3 gap-6">
-            <div className="feature">
-              <div className="feature-icon bg-aqua-soft">
-                <svg className="w-8 h-8 text-aqua" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            {/* Card 1 */}
+            <div className="relative h-[18em] w-full border-2 border-[rgba(75,30,133,0.5)] rounded-[1.5em] bg-gradient-to-br from-[rgba(75,30,133,1)] via-purple-700/80 to-[rgba(75,30,133,0.2)] text-white p-[1.5em] flex justify-center items-left flex-col gap-[1em] backdrop-blur-[12px] hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 group/card hover:-translate-y-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-fuchsia-500/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 rounded-[1.5em]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,50,190,0.1),transparent_60%)] group-hover/card:animate-pulse" />
+
+              <div className="absolute top-4 right-4 flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-purple-300/50" />
+                <div className="w-2 h-2 rounded-full bg-purple-300/30" />
+                <div className="w-2 h-2 rounded-full bg-purple-300/10" />
               </div>
-              <h3 className="sub-title">Verified Professionals</h3>
-              <p className="muted">All nunnies are thoroughly vetted and approved by our admin team.</p>
+
+              <div className="relative z-10 transition-transform duration-300 group-hover/card:translate-y-[-2px] space-y-3">
+                <h3 className="text-[1.6em] font-bold bg-gradient-to-r from-white via-purple-100 to-purple-200 bg-clip-text text-transparent">Verified Professionals</h3>
+                <p className="text-[0.95em] text-purple-100/90 leading-relaxed font-light">All nunnies are thoroughly vetted and approved by our admin team.</p>
+              </div>
+
+              <div className="absolute bottom-4 left-4 w-8 h-8 rounded-full bg-gradient-to-br from-purple-400/20 to-transparent blur-sm group-hover/card:animate-pulse" />
             </div>
-            <div className="feature">
-              <div className="feature-icon bg-aqua-soft">
-                <svg className="w-8 h-8 text-aqua" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+
+            {/* Card 2 */}
+            <div className="relative h-[18em] w-full border-2 border-[rgba(75,30,133,0.5)] rounded-[1.5em] bg-gradient-to-br from-[rgba(75,30,133,1)] via-purple-700/80 to-[rgba(75,30,133,0.2)] text-white p-[1.5em] flex justify-center items-left flex-col gap-[1em] backdrop-blur-[12px] hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 group/card hover:-translate-y-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-fuchsia-500/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 rounded-[1.5em]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,50,190,0.1),transparent_60%)] group-hover/card:animate-pulse" />
+
+              <div className="absolute top-4 right-4 flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-purple-300/50" />
+                <div className="w-2 h-2 rounded-full bg-purple-300/30" />
+                <div className="w-2 h-2 rounded-full bg-purple-300/10" />
               </div>
-              <h3 className="sub-title">Local Service</h3>
-              <p className="muted">Find nannies in your specific county and constituency.</p>
+
+              <div className="relative z-10 transition-transform duration-300 group-hover/card:translate-y-[-2px] space-y-3">
+                <h3 className="text-[1.6em] font-bold bg-gradient-to-r from-white via-purple-100 to-purple-200 bg-clip-text text-transparent">Local Service</h3>
+                <p className="text-[0.95em] text-purple-100/90 leading-relaxed font-light">Find nannies in your specific county and constituency.</p>
+              </div>
+
+              <div className="absolute bottom-4 left-4 w-8 h-8 rounded-full bg-gradient-to-br from-purple-400/20 to-transparent blur-sm group-hover/card:animate-pulse" />
             </div>
-            <div className="feature">
-              <div className="feature-icon bg-aqua-soft">
-                <svg className="w-8 h-8 text-aqua" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
+
+            {/* Card 3 */}
+            <div className="relative h-[18em] w-full border-2 border-[rgba(75,30,133,0.5)] rounded-[1.5em] bg-gradient-to-br from-[rgba(75,30,133,1)] via-purple-700/80 to-[rgba(75,30,133,0.2)] text-white p-[1.5em] flex justify-center items-left flex-col gap-[1em] backdrop-blur-[12px] hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 group/card hover:-translate-y-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-fuchsia-500/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 rounded-[1.5em]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,50,190,0.1),transparent_60%)] group-hover/card:animate-pulse" />
+
+              <div className="absolute top-4 right-4 flex gap-2">
+                <div className="w-2 h-2 rounded-full bg-purple-300/50" />
+                <div className="w-2 h-2 rounded-full bg-purple-300/30" />
+                <div className="w-2 h-2 rounded-full bg-purple-300/10" />
               </div>
-              <h3 className="sub-title">Fair Pricing</h3>
-              <p className="muted">Transparent pricing with no hidden fees or commissions.</p>
+
+              <div className="relative z-10 transition-transform duration-300 group-hover/card:translate-y-[-2px] space-y-3">
+                <h3 className="text-[1.6em] font-bold bg-gradient-to-r from-white via-purple-100 to-purple-200 bg-clip-text text-transparent">Fair Pricing</h3>
+                <p className="text-[0.95em] text-purple-100/90 leading-relaxed font-light">Transparent pricing with no hidden fees or commissions.</p>
+              </div>
+
+              <div className="absolute bottom-4 left-4 w-8 h-8 rounded-full bg-gradient-to-br from-purple-400/20 to-transparent blur-sm group-hover/card:animate-pulse" />
             </div>
           </div>
         </section>
@@ -154,13 +182,13 @@ export default function About() {
       <style jsx>{`
         /* Palette */
         :global(:root) {
-          --aqua: #2DD4BF;
-          --charcoal: #334155;
-          --cream: #FAF8F3;
+          --aqua: var(--blue-600);
+          --charcoal: var(--blue-900);
+          --cream: var(--blue-50);
         }
         .text-charcoal { color: var(--charcoal); }
         .bg-aqua { background-color: var(--aqua); }
-        .bg-aqua-dark { background-color: #24bda9; }
+        .bg-aqua-dark { background-color: var(--blue-800); }
         .bg-aqua-soft { background-color: rgba(45, 212, 191, 0.14); }
         .bg-cream { background-color: var(--cream); }
         .bg-cream-deep { background-color: #F2EEE6; }
@@ -170,17 +198,17 @@ export default function About() {
         /* Page wrapper background */
         .about-wrap {
           background:
-            radial-gradient(1000px 600px at -10% -10%, rgba(45, 212, 191, 0.18), rgba(45, 212, 191, 0) 60%),
-            radial-gradient(800px 500px at 110% 10%, rgba(51, 65, 85, 0.10), rgba(51, 65, 85, 0) 65%),
+            radial-gradient(1000px 600px at -10% -10%, rgba(74,127,167,0.18), rgba(74,127,167,0) 60%),
+            radial-gradient(800px 500px at 110% 10%, rgba(26, 61, 99, 0.10), rgba(26, 61, 99, 0) 65%),
             var(--cream);
         }
 
         /* Hero layered background */
         .bg-layer {
           background:
-            radial-gradient(650px 380px at 20% -10%, rgba(45, 212, 191, 0.30), rgba(45, 212, 191, 0) 60%),
-            radial-gradient(500px 320px at 85% 10%, rgba(51, 65, 85, 0.18), rgba(51, 65, 85, 0) 60%),
-            linear-gradient(180deg, rgba(250, 248, 243, 0.9), rgba(250, 248, 243, 0.75));
+            radial-gradient(650px 380px at 20% -10%, rgba(74,127,167,0.30), rgba(74,127,167,0) 60%),
+            radial-gradient(500px 320px at 85% 10%, rgba(26, 61, 99, 0.18), rgba(26, 61, 99, 0) 60%),
+            linear-gradient(180deg, rgba(246, 250, 253, 0.9), rgba(246, 250, 253, 0.75));
         }
 
         /* Decorative blobs */
@@ -196,11 +224,11 @@ export default function About() {
 
         /* Cards */
         .card {
-          background: rgba(250, 248, 243, 0.85);
-          border: 1px solid rgba(51, 65, 85, 0.12);
+          background: rgba(246, 250, 253, 0.85);
+          border: 1px solid rgba(26, 61, 99, 0.12);
           border-radius: 20px;
           padding: 24px;
-          box-shadow: 0 8px 24px rgba(51, 65, 85, 0.08);
+          box-shadow: 0 8px 24px rgba(10, 25, 49, 0.08);
           backdrop-filter: saturate(120%) blur(2px);
         }
 

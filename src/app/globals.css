@@ -1,8 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base palette from previous version */
+  --blue-900: #0A1931; /* darkest */
+  --blue-800: #1A3D63; /* navy */
+  --blue-600: #4A7FA7; /* medium */
+  --blue-200: #B3CFE5; /* light */
+  --blue-50:  #F6FAFD; /* surface */
+
+  /* App semantic tokens */
+  --background: var(--blue-50);
+  --foreground: var(--blue-900);
+  --primary:   var(--blue-800);
+  --primary-contrast: #ffffff;
+  --accent:    var(--blue-600);
+  --muted:     var(--blue-200);
 }
 
 @theme inline {
@@ -84,4 +96,46 @@ select {
   bottom: 0;
   background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
   z-index: -1;
+}
+
+/* Uiverse button effect applied globally via a reusable class */
+@layer utilities {
+  /* From Uiverse.io by ShrinilDhorda */
+  .btn {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    outline: none;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    background-color: var(--primary);
+    color: var(--primary-contrast);
+    font-weight: 700;
+    transition: 0.3s ease;
+    box-shadow: 0 6px 24px rgba(10, 25, 49, 0.25);
+  }
+
+  .btn:active {
+    scale: 0.92;
+  }
+
+  .btn:hover {
+    background: linear-gradient(270deg, var(--blue-800) 0%, var(--blue-600) 60%);
+    color: var(--primary-contrast);
+    box-shadow: 0 8px 28px rgba(26, 61, 99, 0.35);
+  }
+
+  /* Compact modifier to reduce size for dense UIs like auth forms */
+  .btn-compact {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+  }
+
+  /* Subtle focus glow for inputs to match btn effects */
+  .focus-glow:focus {
+    box-shadow: 0 0 0 3px rgba(31, 215, 232, 0.25);
+    border-color: rgba(31, 215, 232, 0.75) !important;
+  }
 }

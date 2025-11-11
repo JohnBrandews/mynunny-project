@@ -15,6 +15,7 @@ interface ContactForm {
 
 export default function Contact() {
   const [loading, setLoading] = useState(false)
+  const [openFaqs, setOpenFaqs] = useState<number[]>([])
   
   const {
     register,
@@ -47,6 +48,35 @@ export default function Contact() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const faqs = [
+    {
+      q: 'How do I register as a nunny?',
+      a:
+        "Click on \"Sign Up as a Nunny\" from the homepage, fill in your details, and wait for admin approval. Once approved, you'll be able to see and respond to client requests.",
+    },
+    {
+      q: 'How long does nunny approval take?',
+      a:
+        'Our admin team reviews all nunny applications within 24-48 hours. You\'ll receive an email notification once your application is approved or if we need additional information.',
+    },
+    {
+      q: 'Is there a fee to use MyNunny?',
+      a:
+        'Registration and basic usage of MyNunny is free for both clients and nunnies. We believe in providing a platform that benefits everyone without unnecessary fees.',
+    },
+    {
+      q: 'How do I contact a nunny or client?',
+      a:
+        'Once you find a suitable match, you can use the "Contact" button to initiate communication. This will allow you to discuss details, pricing, and schedule directly with the other party.',
+    },
+  ]
+
+  const toggleFaq = (idx: number) => {
+    setOpenFaqs((prev) =>
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
+    )
   }
 
   return (
@@ -170,72 +200,74 @@ export default function Contact() {
         {/* FAQ Section */}
         <section className="card mt-10">
           <h2 className="section-title">Frequently Asked Questions</h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="sub-title mb-1">How do I register as a nunny?</h3>
-              <p className="muted">
-                Click on "Sign Up as a Nunny" from the homepage, fill in your details, and wait for admin approval. 
-                Once approved, you'll be able to see and respond to client requests.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="sub-title mb-1">How long does nunny approval take?</h3>
-              <p className="muted">
-                Our admin team reviews all nunny applications within 24-48 hours. You'll receive an email notification 
-                once your application is approved or if we need additional information.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="sub-title mb-1">Is there a fee to use MyNunny?</h3>
-              <p className="muted">
-                Registration and basic usage of MyNunny is free for both clients and nunnies. We believe in 
-                providing a platform that benefits everyone without unnecessary fees.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="sub-title mb-1">How do I contact a nunny or client?</h3>
-              <p className="muted">
-                Once you find a suitable match, you can use the "Contact" button to initiate communication. 
-                This will allow you to discuss details, pricing, and schedule directly with the other party.
-              </p>
-            </div>
+          <div className="divide-y divide-[rgba(51,65,85,0.12)]">
+            {faqs.map((item, idx) => {
+              const open = openFaqs.includes(idx)
+              return (
+                <div key={idx}>
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-between py-3 text-left"
+                    aria-expanded={open}
+                    aria-controls={`faq-panel-${idx}`}
+                    onClick={() => toggleFaq(idx)}
+                  >
+                    <span className="sub-title">{item.q}</span>
+                    <span
+                      className={`ml-4 inline-flex h-6 w-6 items-center justify-center rounded-full border border-[rgba(51,65,85,0.25)] text-[12px] transition-transform ${
+                        open ? 'rotate-45' : ''
+                      }`}
+                      aria-hidden
+                    >
+                      +
+                    </span>
+                  </button>
+                  <div
+                    id={`faq-panel-${idx}`}
+                    role="region"
+                    className={`overflow-hidden transition-all duration-300 ${
+                      open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                    }`}
+                  >
+                    <p className="muted pb-4">{item.a}</p>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </section>
       </div>
 
       <style jsx>{`
         :global(:root) {
-          --aqua: #2DD4BF;
-          --charcoal: #334155;
-          --cream: #FAF8F3;
+          --aqua: var(--blue-600);
+          --charcoal: var(--blue-900);
+          --cream: var(--blue-50);
         }
         .text-charcoal { color: var(--charcoal); }
         .text-aqua { color: var(--aqua); }
         .bg-aqua { background-color: var(--aqua); }
-        .bg-aqua-dark { background-color: #24bda9; }
+        .bg-aqua-dark { background-color: var(--blue-800); }
         .muted { color: rgba(51,65,85,0.8); }
 
         .contact-wrap {
           background:
-            radial-gradient(1000px 600px at -10% -10%, rgba(45, 212, 191, 0.20), rgba(45, 212, 191, 0) 60%),
-            radial-gradient(800px 500px at 110% 10%, rgba(51, 65, 85, 0.10), rgba(51, 65, 85, 0) 65%),
+            radial-gradient(1000px 600px at -10% -10%, rgba(74,127,167,0.20), rgba(74,127,167,0) 60%),
+            radial-gradient(800px 500px at 110% 10%, rgba(26,61,99,0.10), rgba(26,61,99,0) 65%),
             var(--cream);
         }
         .contact-hero {
           background:
-            radial-gradient(650px 380px at 20% -10%, rgba(45, 212, 191, 0.30), rgba(45, 212, 191, 0) 60%),
-            radial-gradient(500px 320px at 85% 10%, rgba(51, 65, 85, 0.18), rgba(51, 65, 85, 0) 60%),
+            radial-gradient(650px 380px at 20% -10%, rgba(74,127,167,0.30), rgba(74,127,167,0) 60%),
+            radial-gradient(500px 320px at 85% 10%, rgba(26, 61, 99, 0.18), rgba(26, 61, 99, 0) 60%),
             linear-gradient(180deg, rgba(250, 248, 243, 0.9), rgba(250, 248, 243, 0.75));
         }
         .card {
-          background: rgba(250, 248, 243, 0.85);
-          border: 1px solid rgba(51, 65, 85, 0.12);
+          background: rgba(246, 250, 253, 0.85);
+          border: 1px solid rgba(26, 61, 99, 0.12);
           border-radius: 20px;
           padding: 24px;
-          box-shadow: 0 8px 24px rgba(51, 65, 85, 0.08);
+          box-shadow: 0 8px 24px rgba(10, 25, 49, 0.08);
           backdrop-filter: saturate(120%) blur(2px);
         }
         .section-title { font-size: 1.5rem; font-weight: 800; color: var(--charcoal); margin-bottom: 12px; }
@@ -244,8 +276,8 @@ export default function Contact() {
         .shape-blob {
           position: absolute; inset: auto; pointer-events: none; filter: blur(30px); opacity: 0.5;
         }
-        .blob-a { width: 380px; height: 380px; right: -120px; top: -80px; background: rgba(45, 212, 191, 0.35); border-radius: 50%; }
-        .blob-b { width: 280px; height: 280px; left: -90px; bottom: -100px; background: rgba(51, 65, 85, 0.25); border-radius: 50%; }
+        .blob-a { width: 380px; height: 380px; right: -120px; top: -80px; background: rgba(74, 127, 167, 0.35); border-radius: 50%; }
+        .blob-b { width: 280px; height: 280px; left: -90px; bottom: -100px; background: rgba(26, 61, 99, 0.25); border-radius: 50%; }
       `}</style>
     </div>
   )

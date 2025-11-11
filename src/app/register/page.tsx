@@ -173,10 +173,11 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="text-center mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="relative w-full max-w-2xl">
+        <div className="absolute -top-2 -left-2 -right-2 -bottom-2 rounded-lg bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg animate-pulse" />
+        <div className="relative z-10 bg-white rounded-lg shadow-2xl p-6 sm:p-8">
+          <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {step === 1 ? 'Register as a ' + role.charAt(0).toUpperCase() + role.slice(1) : 'Verify Your Email'}
             </h1>
@@ -340,7 +341,7 @@ export default function Register() {
                 </>
               )}
 
-              <Button type="submit" loading={loading} className="w-full">
+              <Button type="submit" loading={loading} className="w-full btn-compact">
                 Register
               </Button>
             </form>
@@ -360,7 +361,7 @@ export default function Register() {
                 placeholder="123456"
               />
 
-              <Button type="submit" loading={loading} className="w-full">
+              <Button type="submit" loading={loading} className="w-full btn-compact">
                 Verify OTP
               </Button>
 

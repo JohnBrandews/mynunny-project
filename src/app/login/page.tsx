@@ -39,22 +39,21 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-blue-600 mb-2">MyNunny</h1>
-          <h2 className="text-2xl font-bold text-gray-900">
-            {isAdminLogin ? 'Admin Login' : 'Sign in to your account'}
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            {isAdminLogin ? 'Access the admin dashboard' : 'Welcome back!'}
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 py-12 sm:px-6 lg:px-8">
+      <div className="relative sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="absolute -top-2 -left-2 -right-2 -bottom-2 rounded-lg bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg animate-pulse" />
+        <div id="form-container" className="relative z-10 bg-white p-8 sm:p-10 rounded-lg shadow-2xl w-full transform transition duration-500 ease-in-out">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-blue-600 mb-2">MyNunny</h1>
+            <h2 id="form-title" className="text-2xl font-bold text-gray-800">
+              {isAdminLogin ? 'Admin Login' : 'Sign in to your account'}
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              {isAdminLogin ? 'Access the admin dashboard' : 'Welcome back!'}
+            </p>
+          </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
             {isAdminLogin ? (
               <Input
                 label="Username"
@@ -85,7 +84,7 @@ export default function Login() {
             />
 
             <div>
-              <Button type="submit" loading={loading} className="w-full">
+              <Button type="submit" loading={loading} className="w-full btn-compact">
                 {isAdminLogin ? 'Admin Login' : 'Sign in'}
               </Button>
             </div>
@@ -111,7 +110,6 @@ export default function Login() {
               </button>
             </div>
           </div>
-
           {!isAdminLogin && (
             <div className="mt-6">
               <div className="text-center">

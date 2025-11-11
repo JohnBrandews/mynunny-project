@@ -187,40 +187,30 @@ export default function NunnyDashboard() {
               <p className="mt-1 text-sm text-gray-500">There are currently no service requests matching your criteria.</p>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-200">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 pb-6">
               {requests.map((request) => (
-                <li key={request.id} className="px-4 py-4 sm:px-6">
+                <div key={request.id} className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">{request.service}</h3>
+                    <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                      KES {request.amount.toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 mb-4 line-clamp-3">{request.description}</p>
+                  <div className="flex items-center text-sm text-gray-500 mb-4">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    {request.location}
+                  </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="text-lg font-medium text-gray-900 truncate">
-                            {request.service}
-                          </h4>
-                          <div className="mt-1 flex items-center text-sm text-gray-500">
-                            <span className="mr-4">KES {request.amount.toLocaleString()}</span>
-                            <span className="mr-4">{request.location}</span>
-                            <span>Posted by {request.user.fullName}</span>
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {request.user.county}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-600">{request.description}</p>
-                        <p className="text-sm text-gray-500 mt-2">
-                          Posted on {new Date(request.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
+                    <div className="text-sm text-gray-500">
+                      Posted by {request.user.fullName} • {request.user.county}
                     </div>
-
-                    <div className="ml-4 flex-shrink-0">
+                    <div>
                       <Button
-                        size="sm"
+                        size="xs"
                         onClick={() => {
                           if (request.status === 'ASSIGNED') {
                             toast.error('This job has been assigned. You cannot contact the client.')
@@ -234,9 +224,9 @@ export default function NunnyDashboard() {
                       </Button>
                     </div>
                   </div>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           )}
         </div>
       </div>

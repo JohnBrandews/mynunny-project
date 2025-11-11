@@ -29,27 +29,27 @@ enum RequestStatus {
 }
 
 model User {
-  id               String    @id @default(cuid())
-  email            String?   @unique
-  username         String?   @unique
-  password         String
-  role             UserRole
-  fullName         String
-  phone            String
-  idNumber         String
-  county           String
-  constituency     String
-  verified         Boolean   @default(false)
+  id                String         @id @default(cuid())
+  email             String?        @unique
+  username          String?        @unique
+  password          String
+  role              UserRole
+  fullName          String
+  phone             String
+  idNumber          String         @unique
+  county            String
+  constituency      String
+  verified          Boolean        @default(false)
   profilePictureUrl String?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  payments          Payment[]      @relation("UserPayments")
   // Relations
-  nunnyProfile     NunnyProfile?
-  clientProfile    ClientProfile?
-  requests         Request[]
-  sentMessages     Message[] @relation("MessageSender")
-  receivedMessages Message[] @relation("MessageReceiver")
+  nunnyProfile      NunnyProfile?
+  clientProfile     ClientProfile?
+  requests          Request[]
+  sentMessages      Message[]      @relation("MessageSender")
+  receivedMessages  Message[]      @relation("MessageReceiver")
 
   @@map("users")
 }
@@ -58,35 +58,35 @@ model NunnyProfile {
   id          String      @id @default(cuid())
   userId      String      @unique
   description String
-  services    String      // JSON string of service array
+  services    String // JSON string of service array
   contactInfo String?
   status      NunnyStatus @default(PENDING)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   // Relations
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("nunny_profiles")
 }
 
 model ClientProfile {
-  id           String   @id @default(cuid())
-  userId       String   @unique
-  serviceWanted String  // JSON string of service array
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  serviceWanted String // JSON string of service array
   amountOffered Float?
-  contactInfo  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  contactInfo   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("client_profiles")
 }
 
 model Request {
-  id          String         @id @default(cuid())
+  id          String        @id @default(cuid())
   userId      String
   service     String
   amount      Float
@@ -94,28 +94,28 @@ model Request {
   description String
   email       String?
   phone       String?
-  status      RequestStatus  @default(OPEN)
-  isActive    Boolean        @default(true)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  status      RequestStatus @default(OPEN)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   // Relations
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("requests")
 }
 
 model Message {
-  id        String   @id @default(cuid())
-  senderId  String
+  id         String   @id @default(cuid())
+  senderId   String
   receiverId String
-  content   String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
   // Relations
-  sender    User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver  User     @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender   User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
 
   @@map("messages")
 }
@@ -128,4 +128,16 @@ model OTP {
   createdAt DateTime @default(now())
 
   @@map("otps")
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Float
+  status    String   @default("PENDING")
+  txnId     String?
+  type      String   @default("VERIFICATION_FEE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation("UserPayments", fields: [userId], references: [id])
 }

@@ -38,7 +38,15 @@ export default function Home() {
       setLoading(false)
     }
   }
-
+const handleViewAllRequests = () => {
+    // Redirect to the login page
+    window.location.href = '/login'
+  }
+  
+  const handleServiceClick = (requestId: string) => {
+    // Redirect to the login page when a service is clicked
+    window.location.href = '/login'
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -137,7 +145,7 @@ export default function Home() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {requests.map((request) => (
-                <div key={request.id} className="bg-white rounded-lg shadow-md p-6">
+                <div key={request.id} className="bg-white rounded-lg shadow-md p-6" onClick={() => handleServiceClick(request.id)}>
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">{request.service}</h3>
                     <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
@@ -159,12 +167,12 @@ export default function Home() {
               ))}
             </div>
           )}
+ <div className="text-center mt-8">
+        <Link href="/login" onClick={handleViewAllRequests}>
+          <Button>View All Requests</Button>
+        </Link>
+      </div>
 
-          <div className="text-center mt-8">
-            <Link href="/login">
-              <Button>View All Requests</Button>
-            </Link>
-          </div>
         </div>
       </div>
 
