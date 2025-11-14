@@ -18,7 +18,6 @@ interface FormData {
 export default function Login() {
   const router = useRouter()
   const { login } = useAuth()
-  const [isAdminLogin, setIsAdminLogin] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const {
@@ -46,35 +45,26 @@ export default function Login() {
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-blue-600 mb-2">MyNunny</h1>
             <h2 id="form-title" className="text-2xl font-bold text-gray-800">
-              {isAdminLogin ? 'Admin Login' : 'Sign in to your account'}
+              Sign in to your account
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              {isAdminLogin ? 'Access the admin dashboard' : 'Welcome back!'}
+              Welcome back!
             </p>
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
-            {isAdminLogin ? (
-              <Input
-                label="Username"
-                {...register('username', { required: 'Username is required' })}
-                error={errors.username?.message}
-                placeholder="admin"
-              />
-            ) : (
-              <Input
-                label="Email"
-                type="email"
-                {...register('email', { 
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address'
-                  }
-                })}
-                error={errors.email?.message}
-              />
-            )}
+            <Input
+              label="Email"
+              type="email"
+              {...register('email', { 
+                required: 'Email is required',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Invalid email address'
+                }
+              })}
+              error={errors.email?.message}
+            />
 
             <Input
               label="Password"
@@ -85,47 +75,30 @@ export default function Login() {
 
             <div>
               <Button type="submit" loading={loading} className="w-full btn-compact">
-                {isAdminLogin ? 'Admin Login' : 'Sign in'}
+                Sign in
               </Button>
             </div>
           </form>
 
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              <a href="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">Forgot password?</a>
+            </p>
+          </div>
           <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or</span>
-              </div>
-            </div>
-
-            <div className="mt-6 text-center">
-              <button
-                type="button"
-                onClick={() => setIsAdminLogin(!isAdminLogin)}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-              >
-                {isAdminLogin ? 'Regular User Login' : 'Admin Login'}
-              </button>
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Don't have an account?{' '}
+                <Link href="/register?role=client" className="font-medium text-blue-600 hover:text-blue-500">
+                  Sign up as a Client
+                </Link>
+                {' '}or{' '}
+                <Link href="/register?role=nunny" className="font-medium text-blue-600 hover:text-blue-500">
+                  Sign up as a Nunny
+                </Link>
+              </p>
             </div>
           </div>
-          {!isAdminLogin && (
-            <div className="mt-6">
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  Don't have an account?{' '}
-                  <Link href="/register?role=client" className="font-medium text-blue-600 hover:text-blue-500">
-                    Sign up as a Client
-                  </Link>
-                  {' '}or{' '}
-                  <Link href="/register?role=nunny" className="font-medium text-blue-600 hover:text-blue-500">
-                    Sign up as a Nunny
-                  </Link>
-                </p>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

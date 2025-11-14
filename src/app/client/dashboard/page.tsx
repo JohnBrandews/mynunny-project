@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import EditProfileForm from '@/components/EditProfileForm'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -38,6 +39,7 @@ export default function ClientDashboard() {
   const { user, token } = useAuth()
   const router = useRouter()
   const [nunnies, setNunnies] = useState<Nunny[]>([])
+  const [showEdit, setShowEdit] = useState(false)
   const [loading, setLoading] = useState(true)
   const [showRequestForm, setShowRequestForm] = useState(false)
   const [requestLoading, setRequestLoading] = useState(false)
@@ -179,11 +181,26 @@ export default function ClientDashboard() {
               <h1 className="text-3xl font-bold" style={{ color: 'var(--blue-900)' }}>Client Dashboard</h1>
               <p className="mt-2" style={{ color: 'var(--blue-600)' }}>Welcome back, {user.fullName}! Find nunnies or post your service requests.</p>
             </div>
-            <Button onClick={() => setShowRequestForm(!showRequestForm)}>
-              {showRequestForm ? 'Cancel' : 'Post Service Request'}
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setShowEdit(true)}>Edit Profile</Button>
+              <Button onClick={() => setShowRequestForm(!showRequestForm)}>
+                {showRequestForm ? 'Cancel' : 'Post Service Request'}
+              </Button>
+            </div>
           </div>
         </div>
+
+        {showEdit && (
+          <EditProfileForm
+            user={user}
+            token={token}
+            onClose={() => setShowEdit(false)}
+            onProfileUpdated={() => {
+              toast.success('Profile updated')
+              setShowEdit(false)
+            }}
+          />
+        )}
 
         {/* Post Request Form */}
         {showRequestForm && (

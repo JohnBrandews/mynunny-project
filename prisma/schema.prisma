@@ -50,6 +50,7 @@ model User {
   requests          Request[]
   sentMessages      Message[]      @relation("MessageSender")
   receivedMessages  Message[]      @relation("MessageReceiver")
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -128,6 +129,20 @@ model OTP {
   createdAt DateTime @default(now())
 
   @@map("otps")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+  @@index([userId])
 }
 
 model Payment {

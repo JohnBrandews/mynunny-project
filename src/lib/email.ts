@@ -57,6 +57,26 @@ export const sendNunnyStatusEmail = async (
   }
 }
 
+export const sendPasswordResetEmail = async (email: string, link: string): Promise<void> => {
+  try {
+    await transporter.sendMail({
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject: 'Reset your MyNunny password',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Password reset request</h2>
+          <p>We received a request to reset your password. Click the button below to proceed. This link will expire in 1 hour.</p>
+          <p style="margin: 24px 0;"><a href="${link}" style="background:#2563EB;color:#fff;padding:12px 16px;border-radius:8px;text-decoration:none;">Reset password</a></p>
+          <p>If you didn't request this, you can safely ignore this email.</p>
+        </div>
+      `,
+    })
+  } catch (e) {
+    console.warn('sendPasswordResetEmail failed:', e)
+  }
+}
+
 export const sendOTPEmail = async (email: string, otp: string): Promise<void> => {
   try {
     await transporter.sendMail({
