@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -28,7 +28,7 @@ interface FormData {
   amountOffered?: number
 }
 
-export default function Register() {
+function RegisterContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const role = searchParams.get('role') as 'nunny' | 'client'
@@ -677,5 +677,13 @@ export default function Register() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Register() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterContent />
+    </Suspense>
   )
 }
