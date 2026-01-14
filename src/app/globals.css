@@ -78,10 +78,10 @@ select {
   /* Homepage hero background with subject image and soft overlay */
   background-image:
     radial-gradient(120% 120% at 0% 0%, rgba(2, 6, 23, 0.55) 0%, rgba(2, 6, 23, 0.35) 45%, rgba(2, 6, 23, 0.15) 100%),
-    url('/hero-cleaner.png');
+    url('/hero-nunny.png');
   background-blend-mode: overlay, normal;
   background-size: cover;
-  background-position: 75% center;
+  background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }

@@ -26,6 +26,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid or expired OTP' }, { status: 400 })
     }
 
+    // Uniqueness pre-checks to return clear messages before attempting insert
+    const emailToCheck = tempData.email || email
+    const [existingByEmail, existingByIdNumber] = await Promise.all([
+      emailToCheck ? prisma.user.findUnique({ where: { email: emailToCheck } }) : Promise.resolve(null),
+      prisma.user.findUnique({ where: { idNumber: tempData.idNumber } }),
+    ])
+
+    if (existingByEmail) {
+      return NextResponse.json(
+        { error: 'Email is already registered. Please log in or use Forgot Password.' },
+        { status: 409 }
+      )
+    }
+
+    if (existingByIdNumber) {
+      return NextResponse.json(
+        { error: 'ID number is already registered. Please double-check or contact support.' },
+        { status: 409 }
+      )
+    }
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -87,8 +108,21 @@ export async function POST(request: NextRequest) {
       }
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('OTP verification error:', error)
+
+    // Translate Prisma unique constraint errors into 409 responses with clear messages
+    if (error?.code === 'P2002') {
+      const target = error?.meta?.target
+      if (Array.isArray(target) && target.includes('email')) {
+        return NextResponse.json({ error: 'Email is already registered. Please log in or use Forgot Password.' }, { status: 409 })
+      }
+      if (Array.isArray(target) && target.includes('idNumber')) {
+        return NextResponse.json({ error: 'ID number is already registered. Please double-check or contact support.' }, { status: 409 })
+      }
+      return NextResponse.json({ error: 'Unique constraint violation.' }, { status: 409 })
+    }
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
