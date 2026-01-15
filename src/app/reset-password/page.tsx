@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const params = useSearchParams()
   const router = useRouter()
   const token = params.get('token') || ''
@@ -96,5 +96,13 @@ export default function ResetPasswordPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordContent />
+    </Suspense>
   )
 }
