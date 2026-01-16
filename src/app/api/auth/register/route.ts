@@ -59,11 +59,22 @@ export async function POST(request: NextRequest) {
     })
 
     // Send OTP email (do not fail the whole flow if email fails)
-    try {
-      await sendOTPEmail(email, otp)
-    } catch (e) {
-      console.warn('Email send failed, OTP logged in server logs.')
-    }
+    // Use Promise.race to ensure we don't wait too long for email
+    const emailPromise = sendOTPEmail(email, otp).catch((e) => {
+      console.warn('Email send failed, OTP logged in server logs. Error:', e)
+      return null // Don't throw, just log
+    })
+    
+    // Set a timeout to prevent hanging
+    const timeoutPromise = new Promise((resolve) => {
+      setTimeout(() => {
+        console.warn('Email send timeout, continuing with registration')
+        resolve(null)
+      }, 8000) // 8 second timeout
+    })
+
+    // Race between email sending and timeout
+    await Promise.race([emailPromise, timeoutPromise])
 
     // Store user data temporarily (we'll create the actual user after OTP verification)
     // For now, we'll just return success

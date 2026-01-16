@@ -7,6 +7,11 @@ export const config = {
     expiresIn: "7d",
   },
   email: {
+    // Brevo API (preferred - no SMTP connection issues)
+    brevoApiKey: process.env.BREVO_API_KEY || process.env.SMTP_PASS, // Fallback to SMTP_PASS for backward compatibility
+    senderEmail: process.env.SENDER_EMAIL || process.env.SMTP_FROM || "noreply@mynunny.com",
+    senderName: process.env.SENDER_NAME || "MyNunny",
+    // Legacy SMTP (for reference, but using Brevo API now)
     host: process.env.SMTP_HOST || "smtp.ethereal.email",
     port: parseInt(process.env.SMTP_PORT || "587"),
     user: process.env.SMTP_USER || "your-ethereal-username",
