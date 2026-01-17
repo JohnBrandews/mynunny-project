@@ -54,6 +54,8 @@ export async function POST(request: NextRequest) {
         fullName: user.fullName,
         verified: user.verified,
         profilePictureUrl: user.profilePictureUrl,
+        county: user.county,
+        constituency: user.constituency,
         nunnyProfile: user.nunnyProfile,
         clientProfile: user.clientProfile
       }

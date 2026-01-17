@@ -11,6 +11,8 @@ interface User {
   fullName: string
   verified: boolean
   profilePictureUrl?: string
+  county?: string
+  constituency?: string
   nunnyProfile?: any
   clientProfile?: any
 }

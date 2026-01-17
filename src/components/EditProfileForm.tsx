@@ -27,9 +27,10 @@ export default function EditProfileForm({ user, token, onClose, onProfileUpdated
     formData.append('fullName', fullName)
     if (user.role === 'NUNNY') {
       if (newServiceTerm.trim()) formData.append('newServiceTerm', newServiceTerm.trim())
-      formData.append('locationCounty', county)
-      formData.append('locationConstituency', constituency)
     }
+    // Allow both NUNNY and CLIENT to update location
+    formData.append('locationCounty', county)
+    formData.append('locationConstituency', constituency)
     if (profilePicture) formData.append('profilePicture', profilePicture)
     if (profilePictureUrl) formData.append('profilePictureUrl', profilePictureUrl)
     const res = await fetch('/api/profile', {
@@ -41,6 +42,22 @@ export default function EditProfileForm({ user, token, onClose, onProfileUpdated
     })
     setLoading(false)
     if (res.ok) {
+      const data = await res.json()
+      // Update localStorage with updated user data
+      if (data.user) {
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}')
+        const updatedUser = {
+          ...storedUser,
+          ...data.user,
+          profilePictureUrl: data.user.profilePictureUrl || storedUser.profilePictureUrl,
+          fullName: data.user.fullName || storedUser.fullName,
+          county: data.user.county || storedUser.county,
+          constituency: data.user.constituency || storedUser.constituency,
+          nunnyProfile: data.user.nunnyProfile || storedUser.nunnyProfile,
+          clientProfile: data.user.clientProfile || storedUser.clientProfile,
+        }
+        localStorage.setItem('user', JSON.stringify(updatedUser))
+      }
       onProfileUpdated()
       onClose()
     } else {
@@ -70,40 +87,38 @@ export default function EditProfileForm({ user, token, onClose, onProfileUpdated
           />
         </label>
         {user.role === 'NUNNY' && (
-          <>
-            <label className="block mb-2 text-gray-900">
-              Add Service (append)
-              <input
-                type="text"
-                value={newServiceTerm}
-                onChange={e => setNewServiceTerm(e.target.value)}
-                placeholder="e.g., Cooking"
-                className="mt-1 block w-full border rounded px-2 py-1"
-              />
-              <span className="text-xs text-gray-500">Existing: {user.nunnyProfile?.services ? JSON.parse(user.nunnyProfile.services).join(', ') : 'None'}</span>
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <label className="block mb-2 text-gray-900">
-                County
-                <input
-                  type="text"
-                  value={county}
-                  onChange={e => setCounty(e.target.value)}
-                  className="mt-1 block w-full border rounded px-2 py-1"
-                />
-              </label>
-              <label className="block mb-2 text-gray-900">
-                Constituency
-                <input
-                  type="text"
-                  value={constituency}
-                  onChange={e => setConstituency(e.target.value)}
-                  className="mt-1 block w-full border rounded px-2 py-1"
-                />
-              </label>
-            </div>
-          </>
+          <label className="block mb-2 text-gray-900">
+            Add Service (append)
+            <input
+              type="text"
+              value={newServiceTerm}
+              onChange={e => setNewServiceTerm(e.target.value)}
+              placeholder="e.g., Cooking"
+              className="mt-1 block w-full border rounded px-2 py-1"
+            />
+            <span className="text-xs text-gray-500">Existing: {user.nunnyProfile?.services ? JSON.parse(user.nunnyProfile.services).join(', ') : 'None'}</span>
+          </label>
         )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label className="block mb-2 text-gray-900">
+            County
+            <input
+              type="text"
+              value={county}
+              onChange={e => setCounty(e.target.value)}
+              className="mt-1 block w-full border rounded px-2 py-1"
+            />
+          </label>
+          <label className="block mb-2 text-gray-900">
+            Constituency
+            <input
+              type="text"
+              value={constituency}
+              onChange={e => setConstituency(e.target.value)}
+              className="mt-1 block w-full border rounded px-2 py-1"
+            />
+          </label>
+        </div>
         <label className="block mb-2 text-gray-900">
           Profile Picture
           <input
@@ -124,7 +139,7 @@ export default function EditProfileForm({ user, token, onClose, onProfileUpdated
           />
         </label>
         {user.role === 'CLIENT' && (
-          <p className="text-xs text-gray-500">As a client, you can update your profile picture and name.</p>
+          <p className="text-xs text-gray-500">As a client, you can update your profile picture, name, and location.</p>
         )}
         <div className="flex gap-2 mt-4 justify-end">
           <button type="button" onClick={onClose} className="bg-gray-200 px-4 py-2 rounded">Cancel</button>

@@ -224,9 +224,53 @@ export default function ClientDashboard() {
             onProfileUpdated={() => {
               toast.success('Profile updated')
               setShowEdit(false)
+              // Refresh the page to show updated profile
+              window.location.reload()
             }}
           />
         )}
+
+        {/* Profile Summary */}
+        <div className="bg-white shadow rounded-lg p-6 mb-8">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+            <div className="flex-shrink-0">
+              {user.profilePictureUrl ? (
+                <img 
+                  className="h-24 w-24 sm:h-32 sm:w-32 rounded-full object-cover border-4 border-blue-200" 
+                  src={user.profilePictureUrl} 
+                  alt={user.fullName}
+                />
+              ) : (
+                <div className="h-24 w-24 sm:h-32 sm:w-32 rounded-full bg-gradient-to-br from-blue-200 to-blue-400 flex items-center justify-center border-4 border-blue-200">
+                  <span className="text-3xl sm:text-4xl font-bold text-white">
+                    {user.fullName.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{user.fullName}</h3>
+              {user.clientProfile?.serviceWanted ? (
+                <p className="text-sm sm:text-base text-gray-600 mb-2">
+                  <span className="font-semibold">Services Needed:</span>{' '}
+                  {typeof user.clientProfile.serviceWanted === 'string' 
+                    ? JSON.parse(user.clientProfile.serviceWanted).join(', ') 
+                    : user.clientProfile.serviceWanted}
+                </p>
+              ) : (
+                <p className="text-sm sm:text-base text-gray-500 mb-2">No services specified yet</p>
+              )}
+              <p className="text-sm sm:text-base text-gray-600">
+                <span className="font-semibold">Location:</span> {user.county || 'Not set'}, {user.constituency || 'Not set'}
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                Client
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* Post Request Form */}
         {showRequestForm && (
