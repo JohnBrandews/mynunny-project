@@ -29,6 +29,8 @@ model User {
   nunnyProfile        NunnyProfile?
   passwordResetTokens PasswordResetToken[]
   requests            Request[]
+  ratingsGiven        Rating[]             @relation("ClientRatings")
+  ratingsReceived     Rating[]             @relation("NunnyRatings")
 
   @@map("users")
 }
@@ -124,6 +126,22 @@ model Payment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation("UserPayments", fields: [userId], references: [id])
+}
+
+model Rating {
+  id           String   @id @default(cuid())
+  clientId     String
+  nunnyUserId  String
+  rating       Int      // 1-5 stars
+  comment      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  client       User     @relation("ClientRatings", fields: [clientId], references: [id], onDelete: Cascade)
+  nunny        User     @relation("NunnyRatings", fields: [nunnyUserId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, nunnyUserId])
+  @@index([nunnyUserId])
+  @@map("ratings")
 }
 
 enum UserRole {

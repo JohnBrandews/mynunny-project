@@ -38,6 +38,10 @@ export default function NunnyDashboard() {
   const router = useRouter()
   const [requests, setRequests] = useState<Request[]>([])
   const [loading, setLoading] = useState(true)
+  const [ratings, setRatings] = useState<any[]>([])
+  const [averageRating, setAverageRating] = useState(0)
+  const [totalRatings, setTotalRatings] = useState(0)
+  const [ratingsLoading, setRatingsLoading] = useState(true)
 
   useEffect(() => {
     if (!user || user.role !== 'NUNNY') {
@@ -52,6 +56,7 @@ export default function NunnyDashboard() {
     }
 
     fetchRequests()
+    fetchRatings()
   }, [user, router])
 
   const fetchRequests = async () => {
@@ -73,6 +78,25 @@ export default function NunnyDashboard() {
       toast.error(error.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchRatings = async () => {
+    if (!user?.id) return
+    
+    try {
+      const response = await fetch(`/api/nunnies/${user.id}/ratings`)
+      const data = await response.json()
+
+      if (response.ok) {
+        setRatings(data.ratings || [])
+        setAverageRating(data.averageRating || 0)
+        setTotalRatings(data.totalRatings || 0)
+      }
+    } catch (error: any) {
+      console.error('Error fetching ratings:', error)
+    } finally {
+      setRatingsLoading(false)
     }
   }
 
@@ -164,7 +188,7 @@ export default function NunnyDashboard() {
                 </div>
               )}
             </div>
-            <div className="ml-4">
+            <div className="ml-4 flex-1">
               <h3 className="text-lg font-medium text-gray-900">{user.fullName}</h3>
               <p className="text-sm text-gray-500">
                 Services: {user.nunnyProfile?.services ? JSON.parse(user.nunnyProfile.services).join(', ') : 'None specified'}
@@ -173,13 +197,100 @@ export default function NunnyDashboard() {
                 Location: {user.county}, {user.constituency}
               </p>
             </div>
-            <div className="ml-auto">
+            <div className="ml-auto flex flex-col items-end gap-2">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                 Approved
               </span>
+              {totalRatings > 0 && (
+                <div className="flex items-center gap-1">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        className={`w-4 h-4 ${
+                          star <= Math.round(averageRating)
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'fill-gray-300 text-gray-300'
+                        }`}
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-600">
+                    {averageRating.toFixed(1)} ({totalRatings})
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
+
+        {/* My Ratings */}
+        {totalRatings > 0 && (
+          <div className="bg-white shadow rounded-lg p-6 mb-8">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Client Reviews</h3>
+            {ratingsLoading ? (
+              <div className="text-center py-4">
+                <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              </div>
+            ) : ratings.length > 0 ? (
+              <div className="space-y-4">
+                {ratings.slice(0, 5).map((rating) => (
+                  <div key={rating.id} className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        {rating.client.profilePictureUrl ? (
+                          <img
+                            src={rating.client.profilePictureUrl}
+                            alt={rating.client.fullName}
+                            className="w-8 h-8 rounded-full"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center">
+                            <span className="text-sm font-medium text-blue-800">
+                              {rating.client.fullName.charAt(0)}
+                            </span>
+                          </div>
+                        )}
+                        <span className="font-medium text-gray-900">{rating.client.fullName}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <svg
+                            key={star}
+                            className={`w-4 h-4 ${
+                              star <= rating.rating
+                                ? 'fill-yellow-400 text-yellow-400'
+                                : 'fill-gray-300 text-gray-300'
+                            }`}
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
+                    </div>
+                    {rating.comment && (
+                      <p className="text-sm text-gray-600 mt-2">{rating.comment}</p>
+                    )}
+                    <p className="text-xs text-gray-400 mt-1">
+                      {new Date(rating.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))}
+                {ratings.length > 5 && (
+                  <p className="text-sm text-gray-500 text-center pt-2">
+                    Showing 5 of {ratings.length} reviews
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-4">No reviews yet</p>
+            )}
+          </div>
+        )}
 
         {/* Service Requests */}
         <div className="bg-white shadow overflow-hidden sm:rounded-md">

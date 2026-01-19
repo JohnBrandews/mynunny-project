@@ -17,6 +17,8 @@ interface Nunny {
   description: string
   services: string
   contactInfo?: string
+  averageRating?: number
+  totalRatings?: number
   user: {
     id: string
     fullName: string
@@ -54,6 +56,12 @@ export default function ClientDashboard() {
   })
   const [showContact, setShowContact] = useState(false)
   const [contactInfo, setContactInfo] = useState<any>(null)
+  const [showRating, setShowRating] = useState(false)
+  const [ratingNunny, setRatingNunny] = useState<Nunny | null>(null)
+  const [selectedRating, setSelectedRating] = useState(0)
+  const [hoverRating, setHoverRating] = useState(0)
+  const [ratingComment, setRatingComment] = useState('')
+  const [ratingLoading, setRatingLoading] = useState(false)
 
   useEffect(() => {
     if (!user || user.role !== 'CLIENT') {
@@ -79,7 +87,24 @@ export default function ClientDashboard() {
         throw new Error(data.error || 'Failed to fetch nunnies')
       }
 
-      setNunnies(data.nunnies)
+      // Fetch ratings for each nunny
+      const nunniesWithRatings = await Promise.all(
+        data.nunnies.map(async (nunny: Nunny) => {
+          try {
+            const ratingsRes = await fetch(`/api/nunnies/${nunny.user.id}/ratings`)
+            const ratingsData = await ratingsRes.json()
+            return {
+              ...nunny,
+              averageRating: ratingsData.averageRating || 0,
+              totalRatings: ratingsData.totalRatings || 0
+            }
+          } catch {
+            return { ...nunny, averageRating: 0, totalRatings: 0 }
+          }
+        })
+      )
+
+      setNunnies(nunniesWithRatings)
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -94,6 +119,55 @@ export default function ClientDashboard() {
   const handleContactNunny = (nunny: Nunny) => {
     setContactInfo(nunny.user)
     setShowContact(true)
+  }
+
+  const handleRateNunny = (nunny: Nunny) => {
+    setRatingNunny(nunny)
+    setSelectedRating(0)
+    setRatingComment('')
+    setShowRating(true)
+  }
+
+  const submitRating = async () => {
+    if (!ratingNunny || selectedRating === 0) {
+      toast.error('Please select a rating')
+      return
+    }
+
+    setRatingLoading(true)
+    try {
+      const response = await fetch('/api/ratings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          nunnyUserId: ratingNunny.user.id,
+          rating: selectedRating,
+          comment: ratingComment
+        })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit rating')
+      }
+
+      toast.success('Rating submitted successfully!')
+      setShowRating(false)
+      setRatingNunny(null)
+      setSelectedRating(0)
+      setRatingComment('')
+      
+      // Refresh nunnies to update ratings
+      fetchNunnies()
+    } catch (error: any) {
+      toast.error(error.message)
+    } finally {
+      setRatingLoading(false)
+    }
   }
 
   // Helper function to format phone number for WhatsApp
@@ -497,6 +571,29 @@ export default function ClientDashboard() {
                     <p className="text-sm font-semibold" style={{ color: 'var(--blue-600)' }}>
                       Nunny
                     </p>
+                    {/* Rating Display */}
+                    {nunny.totalRatings! > 0 && (
+                      <div className="flex items-center justify-center gap-1 mt-1">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <svg
+                              key={star}
+                              className={`w-4 h-4 ${
+                                star <= Math.round(nunny.averageRating!)
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'fill-gray-300 text-gray-300'
+                              }`}
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))}
+                        </div>
+                        <span className="text-xs text-gray-600">
+                          ({nunny.averageRating!.toFixed(1)} · {nunny.totalRatings} {nunny.totalRatings === 1 ? 'review' : 'reviews'})
+                        </span>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="w-full items-center justify-center flex px-4">
@@ -545,13 +642,23 @@ export default function ClientDashboard() {
                       </p>
                     )}
                     
-                    <Button
-                      size="sm"
-                      onClick={() => handleContactNunny(nunny)}
-                      className="w-full btn-compact"
-                    >
-                      Contact Nunny
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleContactNunny(nunny)}
+                        className="flex-1 btn-compact"
+                      >
+                        Contact
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRateNunny(nunny)}
+                        className="flex-1 btn-compact"
+                      >
+                        Rate
+                      </Button>
+                    </div>
                   </div>
                   
                   <hr className="w-full group-hover:h-5 h-3 bg-[var(--blue-600)] group-hover:transition-all group-hover:duration-300 transition-all duration-300" />
@@ -627,6 +734,99 @@ export default function ClientDashboard() {
               >
                 Close
               </button>
+            </div>
+            <style jsx>{`
+              .animate-fade-in {
+                animation: fadeIn 0.2s ease;
+              }
+              @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.95);}
+                to { opacity: 1; transform: scale(1);}
+              }
+            `}</style>
+          </div>
+        )}
+
+        {/* Rating Modal */}
+        {showRating && ratingNunny && (
+          <div
+            className="fixed inset-0 flex items-center justify-center z-[9999]"
+            style={{
+              background: 'rgba(0,0,0,0.5)',
+              backdropFilter: 'blur(2px)',
+            }}
+          >
+            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative animate-fade-in">
+              <button
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-xl font-bold"
+                onClick={() => setShowRating(false)}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+              <h2 className="text-xl font-bold mb-4 text-blue-700 text-center">Rate {ratingNunny.user.fullName}</h2>
+              
+              {/* Star Rating */}
+              <div className="flex justify-center gap-2 mb-6">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setSelectedRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    className="focus:outline-none transition-transform hover:scale-110"
+                  >
+                    <svg
+                      className={`w-10 h-10 ${
+                        star <= (hoverRating || selectedRating)
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'fill-gray-300 text-gray-300'
+                      }`}
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </button>
+                ))}
+              </div>
+
+              {selectedRating > 0 && (
+                <p className="text-center text-gray-600 mb-4">
+                  You selected {selectedRating} {selectedRating === 1 ? 'star' : 'stars'}
+                </p>
+              )}
+
+              {/* Comment */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Comment (optional)
+                </label>
+                <textarea
+                  value={ratingComment}
+                  onChange={(e) => setRatingComment(e.target.value)}
+                  rows={4}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Share your experience with this nunny..."
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowRating(false)}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitRating}
+                  disabled={ratingLoading || selectedRating === 0}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {ratingLoading ? 'Submitting...' : 'Submit Rating'}
+                </button>
+              </div>
             </div>
             <style jsx>{`
               .animate-fade-in {
