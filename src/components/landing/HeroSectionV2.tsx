@@ -66,7 +66,7 @@ export function HeroSectionV2({ onSearch }: HeroSectionV2Props) {
                 />
               </span>
               <br />
-              Match Today! 🌟
+              Match Today!
             </h1>
 
             <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-xl">

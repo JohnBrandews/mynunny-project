@@ -129,9 +129,8 @@ export function TestimonialsSection() {
         >
           <div className="inline-grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-gray-100">
             <div className="flex flex-col items-center gap-2">
-              <div className="text-2xl">⭐</div>
+              <div className="text-2xl font-black text-purple-600">4.9/5</div>
               <div>
-                <div className="text-3xl font-black text-gray-900 leading-none">4.9/5</div>
                 <div className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Average Rating</div>
               </div>
             </div>
