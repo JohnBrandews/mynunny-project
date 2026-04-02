@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
 
 :root {
   --font-size: 16px;
@@ -39,13 +39,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-
-  /* Preserve some old blue tokens for backward compatibility if needed */
-  --blue-900: #0A1931;
-  --blue-800: #1A3D63;
-  --blue-600: #4A7FA7;
-  --blue-200: #B3CFE5;
-  --blue-50:  #F6FAFD;
 }
 
 .dark {
@@ -68,6 +61,8 @@
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -124,118 +119,63 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Ensure form inputs have proper visibility */
-input, textarea, select {
-  color: #1f2937 !important;
-  background-color: #ffffff !important;
-  border: 2px solid #d1d5db !important;
-}
-
-input::placeholder, textarea::placeholder {
-  color: #6b7280 !important;
-  opacity: 1 !important;
-}
-
-/* Focus states for better visibility */
-input:focus, textarea:focus, select:focus {
-  color: #1f2937 !important;
-  background-color: #ffffff !important;
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-  outline: none !important;
-}
-
-/* Force visibility on all input types */
-input[type="text"], 
-input[type="email"], 
-input[type="password"], 
-input[type="number"], 
-input[type="tel"],
-textarea, 
-select {
-  color: #1f2937 !important;
-  background-color: #ffffff !important;
-  border: 2px solid #d1d5db !important;
-  font-size: 16px !important;
-  padding: 12px !important;
-}
-
-/* Ensure background images load properly */
-.hero-bg {
-  /* Homepage hero background with subject image and soft overlay */
-  background-image:
-    radial-gradient(120% 120% at 0% 0%, rgba(2, 6, 23, 0.55) 0%, rgba(2, 6, 23, 0.35) 45%, rgba(2, 6, 23, 0.15) 100%),
-    url('/hero-nunny.png');
-  background-blend-mode: overlay, normal;
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
-
-/* Fallback for background image */
-.hero-bg::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-  z-index: -1;
-}
-
-/* Uiverse button effect applied globally via a reusable class */
-@layer utilities {
-  /* From Uiverse.io by ShrinilDhorda */
-  .btn {
-    font-size: 1rem;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    outline: none;
-    border-radius: 0.4rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    background-color: var(--primary);
-    color: var(--primary-contrast);
-    font-weight: 700;
-    transition: 0.3s ease;
-    box-shadow: 0 6px 24px rgba(10, 25, 49, 0.25);
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
 
-  .btn:active {
-    scale: 0.92;
+  body {
+    @apply bg-background text-foreground;
   }
 
-  .btn:hover {
-    background: linear-gradient(270deg, var(--blue-800) 0%, var(--blue-600) 60%);
-    color: var(--primary-contrast);
-    box-shadow: 0 8px 28px rgba(26, 61, 99, 0.35);
+  /**
+  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
+  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
+  */
+
+  html {
+    font-size: var(--font-size);
   }
 
-  /* Compact modifier to reduce size for dense UIs like auth forms */
-  .btn-compact {
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-    border-radius: 0.4rem;
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
   }
 
-  /* Subtle focus glow for inputs to match btn effects */
-  .focus-glow:focus {
-    box-shadow: 0 0 0 3px rgba(31, 215, 232, 0.25);
-    border-color: rgba(31, 215, 232, 0.75) !important;
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  h4 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  label {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  button {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+  }
+
+  input {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
   }
 }

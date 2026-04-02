@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { Navigation } from "@/components/Navigation";
+import { HeaderV2 } from "@/components/landing/HeaderV2";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
 
@@ -32,7 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <Navigation />
+          <HeaderV2 />
           <main className="min-h-screen">
             {children}
           </main>
