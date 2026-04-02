@@ -62,14 +62,36 @@ export function FooterV2() {
           <div className="space-y-6">
             <h4 className="text-white font-black text-xl tracking-tight uppercase">Quick Links</h4>
             <ul className="space-y-4">
-              {['Home', 'About Us', 'Find a Nanny', 'Become a Nanny', 'How It Works'].map((link) => (
-                <li key={link}>
-                  <Link href="#" className="text-gray-400 hover:text-purple-400 transition-all duration-300 flex items-center gap-2 group font-medium text-lg">
-                    <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all text-purple-500" />
-                    {link}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link href="/#home" className="text-gray-400 hover:text-purple-400 transition-all duration-300 flex items-center gap-2 group font-medium text-lg">
+                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all text-purple-500" />
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-gray-400 hover:text-purple-400 transition-all duration-300 flex items-center gap-2 group font-medium text-lg">
+                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all text-purple-500" />
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/register?role=client" className="text-gray-400 hover:text-purple-400 transition-all duration-300 flex items-center gap-2 group font-medium text-lg">
+                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all text-purple-500" />
+                  Find a Nanny
+                </Link>
+              </li>
+              <li>
+                <Link href="/register?role=nunny" className="text-gray-400 hover:text-purple-400 transition-all duration-300 flex items-center gap-2 group font-medium text-lg">
+                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all text-purple-500" />
+                  Become a Nanny
+                </Link>
+              </li>
+              <li>
+                <Link href="/#features" className="text-gray-400 hover:text-purple-400 transition-all duration-300 flex items-center gap-2 group font-medium text-lg">
+                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -ml-4 group-hover:ml-0 transition-all text-purple-500" />
+                  How It Works
+                </Link>
+              </li>
             </ul>
           </div>
 

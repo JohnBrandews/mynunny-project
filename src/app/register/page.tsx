@@ -10,6 +10,14 @@ import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { kenyaCounties, countyConstituencies, services } from '@/lib/kenya-data'
+import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
+import { 
+  Users as UsersIcon, 
+  ShieldCheck as ShieldCheckIcon, 
+  ArrowRight, 
+  UserPlus 
+} from 'lucide-react'
 
 interface FormData {
   email: string
@@ -26,6 +34,7 @@ interface FormData {
   contactInfo?: string
   serviceWanted?: string[]
   amountOffered?: number
+  otp?: string
 }
 
 function RegisterContent() {
@@ -64,7 +73,9 @@ function RegisterContent() {
   }, [watchedCounty])
 
   useEffect(() => {
-    if (!role || !['nunny', 'client'].includes(role)) {
+    // We only kick them out if they managed to put an INVALID role.
+    // If it's NULL, we show the selection UI instead.
+    if (role && !['nunny', 'client'].includes(role)) {
       router.push('/')
     }
   }, [role, router])
@@ -102,10 +113,14 @@ function RegisterContent() {
       { threshold: 0.3, rootMargin: '-100px 0px' }
     )
 
-    sections.forEach((section) => observer.observe(section))
+    sections.forEach((section) => {
+      if (section) observer.observe(section);
+    });
 
     return () => {
-      sections.forEach((section) => observer.unobserve(section))
+      sections.forEach((section) => {
+        if (section) observer.unobserve(section);
+      });
     }
   }, [step, role])
 
@@ -153,7 +168,8 @@ function RegisterContent() {
     }
   }
 
-  const verifyOTP = async (data: { otp: string }) => {
+  const verifyOTP = async (data: FormData) => {
+    if (!data.otp) return;
     setLoading(true)
     try {
       const response = await fetch('/api/auth/verify-otp', {
@@ -210,7 +226,83 @@ function RegisterContent() {
   }
 
   if (!role || !['nunny', 'client'].includes(role)) {
-    return null
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="max-w-4xl w-full text-center">
+          <motion.div 
+             initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+             className="mb-12 inline-flex items-center gap-3 px-6 py-3 bg-white/50 backdrop-blur-md rounded-full border border-purple-100 shadow-sm"
+          >
+             <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+             <span className="text-sm font-black text-purple-900 uppercase tracking-widest">Get Started Today</span>
+          </motion.div>
+          
+          <h1 className="text-5xl md:text-7xl font-black text-gray-900 mb-6 leading-tight tracking-tight">
+             How would you like to<br />
+             <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 bg-clip-text text-transparent italic">Join Our Community?</span>
+          </h1>
+          <p className="text-xl text-gray-500 font-medium mb-16 max-w-2xl mx-auto">
+             Choose the path that's right for you. Whether you're a family looking for care or a professional providing it.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-8 px-4">
+             {/* Client Card */}
+             <motion.div
+                whileHover={{ y: -10, scale: 1.02 }}
+                className="group relative h-full"
+                onClick={() => router.push('/register?role=client')}
+             >
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600 rounded-[3.5rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="relative h-full bg-white rounded-[3rem] p-10 shadow-2xl border border-gray-100 cursor-pointer overflow-hidden group">
+                   <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                   <div className="relative z-10">
+                      <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-[2rem] flex items-center justify-center text-white mb-8 shadow-xl group-hover:rotate-6 transition-transform">
+                         <UsersIcon size={40} />
+                      </div>
+                      <h3 className="text-3xl font-black text-gray-900 mb-3">I am a Parent</h3>
+                      <p className="text-gray-500 font-medium leading-relaxed mb-8">
+                         Looking for a verified, trusted, and experienced nanny for my family's needs.
+                      </p>
+                      <div className="inline-flex items-center gap-3 text-purple-600 font-black tracking-widest uppercase text-sm">
+                         Join as Family
+                         <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                      </div>
+                   </div>
+                </div>
+             </motion.div>
+
+             {/* Nunny Card */}
+             <motion.div
+                whileHover={{ y: -10, scale: 1.02 }}
+                className="group relative h-full"
+                onClick={() => router.push('/register?role=nunny')}
+             >
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-[3.5rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                <div className="relative h-full bg-white rounded-[3rem] p-10 shadow-2xl border border-gray-100 cursor-pointer overflow-hidden">
+                   <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+                   <div className="relative z-10">
+                      <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-[2rem] flex items-center justify-center text-white mb-8 shadow-xl group-hover:-rotate-6 transition-transform">
+                         <ShieldCheckIcon size={40} />
+                      </div>
+                      <h3 className="text-3xl font-black text-gray-900 mb-3">I am a Nanny</h3>
+                      <p className="text-gray-500 font-medium leading-relaxed mb-8">
+                         I'm a childcare professional looking to offer my expertise to families across Kenya.
+                      </p>
+                      <div className="inline-flex items-center gap-3 text-emerald-600 font-black tracking-widest uppercase text-sm">
+                         Join as Pro
+                         <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                      </div>
+                   </div>
+                </div>
+             </motion.div>
+          </div>
+
+          <div className="mt-16 text-gray-400 font-medium text-lg">
+             Already have an account? <Link href="/login" className="text-purple-600 font-black hover:underline px-2 transition-all">Sign In Here</Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   const steps = [
