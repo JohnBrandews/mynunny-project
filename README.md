@@ -29,7 +29,7 @@ A full-stack web application built with Next.js that connects clients with verif
 - **Frontend**: Next.js 15, React 19, TypeScript
 - **Styling**: Tailwind CSS
 - **Backend**: Next.js API Routes
-- **Database**: SQLite with Prisma ORM
+- **Database**: postgresql with Prisma ORM
 - **Authentication**: JWT with bcrypt password hashing
 - **Email**: Nodemailer with OTP verification
 - **Testing**: Jest with React Testing Library
